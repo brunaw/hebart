@@ -1,7 +1,7 @@
 
 **Author:** [Bruna Wundervald](http://brunaw.com/) **License:** [MIT](https://opensource.org/licenses/MIT)<br/>
 
-  [![CRAN status](http://www.r-pkg.org/badges/version/hebart)](https://cran.r-project.org/package=hebart) [![CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/hebart)](https://cran.r-project.org/package=hebart) [![Rdoc](http://www.rdocumentation.org/badges/version/hebart)](http://www.rdocumentation.org/packages/hebart) [![Travis-CI Build Status](https://travis-ci.org/brunaw/hebart.svg?branch=master)](https://travis-ci.org/brunaw/hebart)
+  [![CRAN status](http://www.r-pkg.org/badges/version/hebart)](https://cran.r-project.org/package=hebart) [![CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/hebart)](https://cran.r-project.org/package=hebart)  [![Travis-CI Build Status](https://travis-ci.org/brunaw/hebart.svg?branch=master)](https://travis-ci.org/brunaw/hebart)
 
 
 `hebart`: A package for fitting of Hierachical Embedded Bayesian Additive Regression Trees, which is an extension of BART to grouped data. 
@@ -42,7 +42,6 @@ Examples
 ------------------------
 
 ``` r
-#----------------------------------------------------
 # Package loading  ----------------------------------
 library(magrittr)
 library(ggplot2)
@@ -88,7 +87,6 @@ data.frame(
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   guides(colour = "none")
-#----------------------------------------------------
 #----------------------------------------------------
 ```
 
