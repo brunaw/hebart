@@ -7,7 +7,7 @@
 hebart(
   formula,
   dataset,
-  iter = 500,
+  iter = 100,
   group_variable = "group",
   pars,
   min_u = 0,

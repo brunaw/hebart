@@ -68,6 +68,18 @@ hb_model <- hebart(formula,
                    iter = 100, burn_in = 25, 
                    P = 20, group_variable, pars,
                    min_u = 0, max_u = 20, scale = FALSE)
+hb_model
+
+Hebart result
+-----------------------------------
+Formula:
+ y ~ X1 
+
+Number of trees:         10 
+Number of covariates:    1
+Prediction error (MSE):  0.5512418 
+R squared:               0.413909 
+
 
 # Making predictions ----------------------------------
 pred_test <- predict_hebart(
