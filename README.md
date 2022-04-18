@@ -65,7 +65,7 @@ pars           <- list(
 # Running the model ----------------------------------
 hb_model <- hebart(formula,
                    dataset = train,
-                   iter = 200, burn_in = 50, 
+                   iter = 500, burn_in = 150, 
                    P = 50, group_variable, pars,
                    min_u = 0, max_u = 20, scale = FALSE)
 hb_model
