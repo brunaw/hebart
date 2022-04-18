@@ -9,4 +9,14 @@ globalVariables(
     "p2_muj",       "parent",    "pred",         "preds",          "prior_k1",
     "results",      "rn",        "sampled_mu_j", "sampled_mu",     "sum_errors",
     "sum_errors_y", "temp_node", "tree_data",    "tree_index",     "var",
-    "var_mu",       "y"))
+    "var_mu",       "y",
+
+    # New variables
+    "Node Average",  "Tree Index",  "avg_mse",  "get_parent",
+    "iter",  "mse",  "mses",  "n_nodes", "nodes",
+    "tau",  "trees", "value"
+
+    ))
+
+requireNamespace("ggplot2", quietly = TRUE)
+requireNamespace("patchwork", quietly = TRUE)

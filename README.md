@@ -65,8 +65,8 @@ pars           <- list(
 # Running the model ----------------------------------
 hb_model <- hebart(formula,
                    dataset = train,
-                   iter = 100, burn_in = 25, 
-                   P = 20, group_variable, pars,
+                   iter = 200, burn_in = 50, 
+                   P = 50, group_variable, pars,
                    min_u = 0, max_u = 20, scale = FALSE)
 hb_model
 
@@ -75,10 +75,10 @@ Hebart result
 Formula:
  y ~ X1 
 
-Number of trees:         10 
-Number of covariates:    1
-Prediction error (MSE):  0.5512418 
-R squared:               0.413909 
+Number of trees:         50 
+Number of covariates:    1 
+Prediction error (MSE):  0.0981325 
+R squared:               0.8928213 
 
 
 # Making predictions ----------------------------------
@@ -90,7 +90,7 @@ pred_test <- predict_hebart(
 # Predictions in the test set --------------------------
 data.frame(
   y = test$y, pred = pred_test$pred, 
-  group = pred_test$group, pred_lme = pred_lme
+  group = pred_test$group, 
 )  %>% 
   ggplot(aes(x = y, y = pred)) +
   geom_point(aes(colour = factor(group)), size = 2) +
@@ -99,10 +99,18 @@ data.frame(
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   guides(colour = "none")
-#----------------------------------------------------
+ 
 ```
 
-<img src="img/predictions.png">
+<img src="img/predictions.png" class="center">
+
+```{r}
+# Diagnostics --------------------------
+diagnostics(hb_model)
+#----------------------------------------------------
+```
+<img src="img/diagnostics.png" class="center">
+
 
 To be implemented
 ------------------------

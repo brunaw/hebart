@@ -59,6 +59,8 @@ p_rule <- function(variable_index, data, sel_node){
 #' @importFrom magrittr %>%
 NULL
 
+
+
 #' Model data handler
 #'
 #' A function to adjust the data

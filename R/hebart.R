@@ -439,7 +439,7 @@ than the total number of iterations")
 
 
   result <- list(
-    tau_post = tau_post[-c(1:burn_in)],
+    tau_post = tau_post[-c(1:(burn_in+1))],
     final_trees = all_trees,
     sampled_k1 = sampled_k1[-c(1:burn_in)],
     P = P,
