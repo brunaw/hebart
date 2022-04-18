@@ -77,8 +77,8 @@ Formula:
 
 Number of trees:         50 
 Number of covariates:    1 
-Prediction error (MSE):  0.0981325 
-R squared:               0.8928213 
+Prediction error (MSE):  0.1011523 
+R squared:               0.8946128 
 
 
 # Making predictions ----------------------------------
@@ -118,7 +118,6 @@ To be implemented
 
 - [ ] The official `pkgdown` for `hebart`
 - [ ] Variable importances
-- [ ] Diagnostics
 
 
 Citation
