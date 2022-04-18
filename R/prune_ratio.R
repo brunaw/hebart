@@ -56,7 +56,7 @@ prune_tree <- function(current_tree, drawn_node, variable_in_question){
 #' @param old_tree The previous tree
 #' @param tree The current tree
 #' @param current_node The current node
-#' @param p_split The number of available predictors
+#' @param p_split Probability of splitting a variable
 #' @param var_in_prune The variable that was split in the node chosen to
 #' be pruned.
 #' @param i The current iteration number

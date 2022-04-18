@@ -38,8 +38,8 @@ hebart <- function(formula, dataset, iter = 100,
                    # HEBART parameters
                    min_u = 0, max_u = 20, prior_k1 = TRUE,
                    P = 5, sample_k1 = TRUE, burn_in = 50,
-                   alpha_grow = 0.95,
-                   beta_grow  = 0.15,
+                   alpha_grow = 0.98,
+                   beta_grow  = 0.05,
                    ...
 ){
 

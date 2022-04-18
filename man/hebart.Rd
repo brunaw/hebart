@@ -16,8 +16,8 @@ hebart(
   P = 5,
   sample_k1 = TRUE,
   burn_in = 50,
-  alpha_grow = 0.95,
-  beta_grow = 0.15,
+  alpha_grow = 0.98,
+  beta_grow = 0.05,
   ...
 )
 }

@@ -21,7 +21,7 @@ transition_ratio_prune(
 
 \item{current_node}{The current node}
 
-\item{p_split}{The number of available predictors}
+\item{p_split}{Probability of splitting a variable}
 
 \item{var_in_prune}{The variable that was split in the node chosen to
 be pruned.}

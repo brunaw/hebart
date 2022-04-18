@@ -10,8 +10,9 @@
 
 p_rule <- function(variable_index, data, sel_node){
   var <- data %>%
-    dplyr::filter(node == sel_node)
-  var <- unique(var[, variable_index])
+    dplyr::filter(node == sel_node) %>%
+    dplyr::pull(variable_index) %>%
+    unique()
 
   # selecting the cut point
   # selected_rule <- sample(var[

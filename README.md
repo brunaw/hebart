@@ -87,7 +87,7 @@ pred_test <- predict_hebart(
   group_variable = group_variable, formula = formula
 )
 
-# Plotting results  ----------------------------------
+# Predictions in the test set --------------------------
 data.frame(
   y = test$y, pred = pred_test$pred, 
   group = pred_test$group, pred_lme = pred_lme
