@@ -187,41 +187,34 @@ diagnostics_traceplot <- function(model, type = 'tau', sqrt = FALSE){
 #' @return The correspondent plot
 
 plot_mse_iter <- function(model){
-
-  get_mse_tree <-  function(tree){
-    tree %>%
-      dplyr::summarise(mse = mean((y - sampled_mu_j)^2)) %>%
-      dplyr::pull(mse)
-  }
-
-  get_mse <- function(tree_data){
-    all_trees <- tree_data$est_tree
-    all_trees <- all_trees[-1]
-    mses <- all_trees %>% purrr::map_dbl(get_mse_tree)
-    mses
-  }
+  iter <- length(model$tau_post)
 
   all_mse <- dplyr::tibble(
     trees = model$final_trees$tree_data
   ) %>%
-    dplyr::mutate(mses = purrr::map(trees, get_mse))
+    dplyr::mutate(id_tree = 1:n()) %>%
+    tidyr::unnest(trees) %>%
+    dplyr::group_by(id_tree) %>%
+    dplyr::slice(-1) %>%
+    dplyr::mutate(id_iter = 1:n()) %>%
+    tidyr::unnest(est_tree)
 
-  all_mse <- all_mse %>%
-    dplyr::mutate(n = 1:n()) %>%
-    tidyr::unnest(mses) %>%
-    dplyr::group_by(n) %>%
-    dplyr::mutate(iter = 1:n()) %>%
-    dplyr::ungroup()
-
-  df_avg <- all_mse %>%
-    dplyr::select(iter, mses) %>%
-    dplyr::group_by(iter) %>%
-    dplyr::summarise(avg_mse = mean(mses))
+  df_avg <- all_mse  %>%
+    dplyr::select(y, sampled_mu_j, id_tree, id_iter) %>%
+    dplyr::group_by(id_tree, id_iter) %>%
+    dplyr::mutate(id_obs = 1:n()) %>%
+    dplyr::group_by(id_iter, id_obs) %>%
+    dplyr::summarise(sampled_mu_j = sum(sampled_mu_j),
+           y = unique(y),
+           se = (y - sampled_mu_j)^2) %>%
+    dplyr::group_by(id_iter) %>%
+    dplyr::summarise(mse = mean(se)) %>%
+    utils::tail(iter)
 
   # Plotting -----
-  label_y <-  expression('Average MSE')
-  ggplot2::ggplot(df_avg, ggplot2::aes(y = avg_mse, x = iter)) +
-    ggplot2::geom_hline(yintercept = mean(df_avg$avg_mse),
+  label_y <-  expression('MSE per iteration')
+  ggplot2::ggplot(df_avg, ggplot2::aes(y = mse, x = id_iter)) +
+    ggplot2::geom_hline(yintercept = mean(df_avg$mse),
                         colour = '#c95a49', size = 0.5, linetype = 'dotted') +
     ggplot2::geom_point(alpha = 0.4) +
     ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +

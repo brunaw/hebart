@@ -169,7 +169,6 @@ predict_hebart <- function(model, newdata, formula, group_variable){
 
   # Removing the intercept
   formula <- stats::as.formula(paste(c(formula), "- 1"))
-  #formula <- stats::as.formula(paste(c(formula), "- 1"))
 
   response_name <- all.vars(formula)[1]
   group         <- dplyr::pull(newdata, !!group_variable)
@@ -180,7 +179,6 @@ predict_hebart <- function(model, newdata, formula, group_variable){
 
   names(X) <-  paste0("X", 1:ncol(X))
   #y <- newdata[ , response_name]
-  group <- dplyr::pull(newdata, !!group_variable)
 
   newdata <- data.frame(X, group)
 

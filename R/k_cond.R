@@ -8,10 +8,14 @@
 #' @return The determinant
 
 faster_det <- function(k_1_d, k_2_d, M_d) {
-  n <- nrow(M_d)
+  n   <- nrow(M_d)
   n_j <- colSums(M_d)
   tMM <- crossprod(x = M_d)
-  Psi_tilde_inv <- diag(n) - M_d%*%diag(k_1_d/(1 + k_1_d*n_j))%*%t(M_d)
+  diag_k1_n <- k_1_d/(1 + k_1_d*n_j)
+  #if(diag_k1_n < 1){ diag_k1_n <- matrix(-1) }
+  Psi_tilde_inv <- diag(n) - M_d%*%diag(diag_k1_n)%*%t(M_d)
+
+
   return(log(k_2_d) + log(1/k_2_d + sum(Psi_tilde_inv)) + sum(log(1 + k_1_d*n_j)))
 }
 

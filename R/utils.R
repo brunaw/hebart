@@ -14,7 +14,7 @@ globalVariables(
     # New variables
     "Node Average",  "Tree Index",  "avg_mse",  "get_parent",
     "iter",  "mse",  "mses",  "n_nodes", "nodes",
-    "tau",  "trees", "value"
+    "tau",  "trees", "value", "id_iter", "id_obs", "id_tree", "se"
 
     ))
 

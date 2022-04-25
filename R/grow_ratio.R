@@ -129,21 +129,37 @@ inv2 <- function(k_1, k_2, M) {
 #' @return The conditional probability
 cond_calculation <- function(data_cond, pars){
 
-  M     <-  stats::model.matrix(~ factor(data_cond$group) - 1)
+  n_groups <- length(unique(factor(data_cond$group)))
+  if(n_groups > 1){
+    M     <-  stats::model.matrix(~ factor(data_cond$group) - 1)
+  } else{
+    M <- matrix(rep(1, nrow(data_cond), ncol = 1))
+
+  }
   y     <-  data_cond$y
   k_1   <-  pars$k1
   k_2   <-  pars$k2
   mu_mu <-  pars$mu_mu
   alpha <-  pars$alpha
   beta  <-  pars$beta
-  n <- nrow(M)
-  W_0 <- rep(mu_mu, n)
+  n     <- nrow(M)
+  W_0   <- rep(mu_mu, n)
   ymW_0 <- y - W_0
 
   term_1 <- -(n/2)*log(2*pi)
-  term_2 <- - 0.5 * faster_det(k_1_d = k_1, k_2_d = k_2, M_d = M)
+  if(n_groups > 1){
+    term_2 <- - 0.5 * faster_det(k_1_d = k_1, k_2_d = k_2, M_d = M)
+  } else {
+    W_1 <- k_1 * M %*% t(M) + diag(n) + k_2
+    term_2 <- - 0.5 * det(W_1)
+  }
   term_3 <- lgamma(n/2 + alpha)
-  term_4 <- - (n/2 + alpha)*log(0.5 * t(ymW_0)%*%inv2(k_1, k_2, M)%*%ymW_0 + beta)
+  if(n_groups > 1){
+    inv_2 <- inv2(k_1, k_2, M)
+  } else {
+    inv_2 <- solve(W_1)
+  }
+  term_4 <- - (n/2 + alpha)*log(0.5 * t(ymW_0)%*%inv_2%*%ymW_0 + beta)
   p_cond_y <- term_1 + term_4 + term_2 + term_3
   return(p_cond_y)
 }

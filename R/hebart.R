@@ -437,6 +437,8 @@ than the total number of iterations")
   }
 
 
+  final_names <- c(name_y, depara_names$original, group_variable)
+  names(data)[1:(nrow(depara_names)+2)] <- final_names
 
   result <- list(
     tau_post = tau_post[-c(1:(burn_in+1))],
@@ -449,7 +451,7 @@ than the total number of iterations")
   )
 
   # RMSE calculation
-  mse <- hebart::predict_hebart(result, data, formula, group_variable)
+  mse <- hebart::predict_hebart(model = result, newdata = dataset, formula, group_variable)
   mse <- mean((mse$pred - y)^2)
   r.squared <- 1 - mse / var(y)
 
