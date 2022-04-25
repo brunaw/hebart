@@ -22,4 +22,5 @@ Imports:
   tibble, 
   tidyr, 
   ggplot2, 
-  scales
+  scales,
+  patchwork

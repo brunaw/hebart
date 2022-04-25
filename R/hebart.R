@@ -14,7 +14,7 @@
 #' @param max_u Integer representing the upper interval of the
 #' @param prior_k1 Logical to decide whether or not use a prior for k1
 #' Uniform distribution used to sample k1
-#' @param P The number of trees
+#' @param num.trees The number of trees
 #' @param sample_k1 Logical to decide whether to sample_k1 or not
 #' @param burn_in The number of burn-in iterations
 #' @param alpha_grow Number between 0 and 1 used in the growing probability
@@ -37,7 +37,7 @@ hebart <- function(formula, dataset, iter = 100,
                    pars,
                    # HEBART parameters
                    min_u = 0, max_u = 20, prior_k1 = TRUE,
-                   P = 5, sample_k1 = TRUE, burn_in = 50,
+                   num.trees = 5, sample_k1 = TRUE, burn_in = 50,
                    alpha_grow = 0.98,
                    beta_grow  = 0.05,
                    ...
@@ -66,6 +66,7 @@ than the total number of iterations")
 
   name_y       <- names(mf)[1]
   names(data)[names(data) == name_y] <- "y"
+  P           <- num.trees
 
   #---------------------------------------------------------------------
   # Defining current distribution parameters

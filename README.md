@@ -49,6 +49,7 @@ library(tidymodels)
 library(hebart)
 
 # Dataset split  ------------------------------------
+set.seed(2022)
 df_real     <- lme4::sleepstudy %>% set_names(c('y', 'X1', 'group'))
 df_real$y   <- c(scale(df_real$y))
 data_split  <- initial_split(df_real)
@@ -64,10 +65,10 @@ pars           <- list(
 
 # Running the model ----------------------------------
 hb_model <- hebart(formula,
-                   dataset = train,
-                   iter = 500, burn_in = 150, 
-                   P = 50, group_variable, pars,
-                   min_u = 0, max_u = 20, scale = FALSE)
+                   dataset   = train,
+                   iter      = 500, burn_in = 150, 
+                   num.trees = 50, group_variable, pars,
+                   min_u     = 0, max_u = 20, scale = FALSE)
 hb_model
 
 Hebart result
@@ -77,8 +78,8 @@ Formula:
 
 Number of trees:         50 
 Number of covariates:    1 
-Prediction error (MSE):  0.1011523 
-R squared:               0.8946128 
+Prediction error (MSE):  0.150179 
+R squared:               0.8402177 
 
 
 # Making predictions ----------------------------------
