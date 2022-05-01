@@ -136,7 +136,7 @@ diagnostics_traceplot <- function(model, type = 'tau', sqrt = FALSE){
     ggplot2::ggplot(df_tau, ggplot2::aes(y = tau, x = iter)) +
       ggplot2::geom_hline(yintercept = mean(df_tau$tau),
                           colour = '#c95a49', size = 0.5, linetype = 'dotted') +
-      ggplot2::geom_point(alpha = 0.4) +
+      ggplot2::geom_line(alpha = 0.4) +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::labs(y = label_y, x = "Iteration") +
@@ -151,7 +151,7 @@ diagnostics_traceplot <- function(model, type = 'tau', sqrt = FALSE){
     ggplot2::ggplot(df_k1, ggplot2::aes(y = k1, x = iter)) +
       ggplot2::geom_hline(yintercept = mean(df_k1$k1),
                           colour = '#c95a49', size = 0.5, linetype = 'dotted') +
-      ggplot2::geom_point(alpha = 0.4) +
+      ggplot2::geom_line(alpha = 0.4) +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::labs(y = label_y, x = "Iteration") +
@@ -167,7 +167,7 @@ diagnostics_traceplot <- function(model, type = 'tau', sqrt = FALSE){
     ggplot2::ggplot(df, ggplot2::aes(y = value, x = iter)) +
       ggplot2::geom_hline(yintercept = mean(df$value),
                           colour = '#c95a49', size = 0.5, linetype = 'dotted') +
-      ggplot2::geom_point(alpha = 0.4) +
+      ggplot2::geom_line(alpha = 0.4) +
       ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 7)) +
       ggplot2::labs(y = label_y, x = "Iteration") +
@@ -216,7 +216,7 @@ plot_mse_iter <- function(model){
   ggplot2::ggplot(df_avg, ggplot2::aes(y = mse, x = id_iter)) +
     ggplot2::geom_hline(yintercept = mean(df_avg$mse),
                         colour = '#c95a49', size = 0.5, linetype = 'dotted') +
-    ggplot2::geom_point(alpha = 0.4) +
+    ggplot2::geom_line(alpha = 0.4) +
     ggplot2::scale_y_continuous(breaks = scales::pretty_breaks(n = 7)) +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
     ggplot2::labs(y = label_y, x = "Iteration") +
@@ -257,7 +257,7 @@ diagnostics <- function(model){
 
   # MSE per iteration ------------------
   p_mse <- plot_mse_iter(model) +
-    ggplot2::ggtitle("MSE per iteration (average)") +
+    ggplot2::ggtitle("MSE per iteration") +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 15, face = "italic"))
 
 

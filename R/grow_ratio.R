@@ -148,10 +148,10 @@ cond_calculation <- function(data_cond, pars){
 
   term_1 <- -(n/2)*log(2*pi)
   if(n_groups > 1){
-    term_2 <- - 0.5 * faster_det(k_1_d = k_1, k_2_d = k_2, M_d = M)
+    term_2 <- - 0.5 * log(faster_det(k_1_d = k_1, k_2_d = k_2, M_d = M))
   } else {
     W_1 <- k_1 * M %*% t(M) + diag(n) + k_2
-    term_2 <- - 0.5 * det(W_1)
+    term_2 <- - 0.5 * log(det(W_1))
   }
   term_3 <- lgamma(n/2 + alpha)
   if(n_groups > 1){
@@ -159,7 +159,7 @@ cond_calculation <- function(data_cond, pars){
   } else {
     inv_2 <- solve(W_1)
   }
-  term_4 <- - (n/2 + alpha)*log(0.5 * t(ymW_0)%*%inv_2%*%ymW_0 + beta)
+  term_4 <- - (n/2 + alpha)*log((0.5 * t(ymW_0)%*%inv_2%*%ymW_0 + beta))
   p_cond_y <- term_1 + term_4 + term_2 + term_3
   return(p_cond_y)
 }

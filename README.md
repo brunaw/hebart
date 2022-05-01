@@ -91,7 +91,7 @@ pred_test <- predict_hebart(
 # Predictions in the test set --------------------------
 data.frame(
   y = test$y, pred = pred_test$pred, 
-  group = pred_test$group, 
+  group = pred_test$group 
 )  %>% 
   ggplot(aes(x = y, y = pred)) +
   geom_point(aes(colour = factor(group)), size = 2) +

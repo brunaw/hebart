@@ -13,7 +13,7 @@ hebart(
   min_u = 0,
   max_u = 20,
   prior_k1 = TRUE,
-  P = 5,
+  num.trees = 5,
   sample_k1 = TRUE,
   burn_in = 50,
   alpha_grow = 0.98,
@@ -40,7 +40,7 @@ Uniform distribution used to sample k1}
 \item{prior_k1}{Logical to decide whether or not use a prior for k1
 Uniform distribution used to sample k1}
 
-\item{P}{The number of trees}
+\item{num.trees}{The number of trees}
 
 \item{sample_k1}{Logical to decide whether to sample_k1 or not}
 
