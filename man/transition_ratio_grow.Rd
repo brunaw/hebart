@@ -4,14 +4,14 @@
 \alias{transition_ratio_grow}
 \title{Transition ratio for grow.}
 \usage{
-transition_ratio_grow(tree, current_node, p, current_selec_var, p_grow, i)
+transition_ratio_grow(tree, current_node, p_vars, current_selec_var, p_grow, i)
 }
 \arguments{
 \item{tree}{The current tree}
 
 \item{current_node}{The current node}
 
-\item{p}{The number of predictors still available}
+\item{p_vars}{The number of predictors still available}
 
 \item{current_selec_var}{The variable selected for the split}
 

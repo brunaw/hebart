@@ -4,7 +4,7 @@
 \alias{structure_ratio_grow}
 \title{Tree structure ratio for grow}
 \usage{
-structure_ratio_grow(tree, current_node, current_selec_var, p)
+structure_ratio_grow(tree, current_node, current_selec_var, p_vars)
 }
 \arguments{
 \item{tree}{The current tree}
@@ -13,7 +13,7 @@ structure_ratio_grow(tree, current_node, current_selec_var, p)
 
 \item{current_selec_var}{The variable selected for the split}
 
-\item{p}{The number of available predictors.}
+\item{p_vars}{The number of available predictors.}
 }
 \value{
 The tree structure ratio

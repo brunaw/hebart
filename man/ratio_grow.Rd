@@ -4,7 +4,7 @@
 \alias{ratio_grow}
 \title{Final ratio for a growth step.}
 \usage{
-ratio_grow(tree, current_node, pars, p, current_selec_var, i, p_grow)
+ratio_grow(tree, current_node, pars, p_vars, current_selec_var, i, p_grow)
 }
 \arguments{
 \item{tree}{The current tree}
@@ -13,7 +13,7 @@ ratio_grow(tree, current_node, pars, p, current_selec_var, i, p_grow)
 
 \item{pars}{The full list of parameters}
 
-\item{p}{The number of available predictors}
+\item{p_vars}{The number of available predictors}
 
 \item{current_selec_var}{The variable selected for the split}
 

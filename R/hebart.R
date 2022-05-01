@@ -238,7 +238,7 @@ than the total number of iterations")
             r <- ratio_grow(tree = sample_tree,
                             current_node =  parent_action,
                             pars = pars,
-                            p = p_vars,
+                            p_vars = p_vars,
                             current_selec_var = selec_var,
                             i = i,
                             p_grow = p_grow)

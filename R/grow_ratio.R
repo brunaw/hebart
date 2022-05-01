@@ -54,7 +54,7 @@ grow_tree <- function(current_tree, selec_var, drawn_node, rule){
 #' given that the action step was a grow
 #' @param tree The current tree
 #' @param current_node The current node
-#' @param p The number of predictors still available
+#' @param p_vars The number of predictors still available
 #' @param current_selec_var The variable selected for the split
 #' @param p_grow The probability of growing the tree
 #' @param i The current iteration
@@ -67,7 +67,7 @@ grow_tree <- function(current_tree, selec_var, drawn_node, rule){
 #' we need the probabilities of:
 #' 1. Pruning the tree
 #' 2. Selecting  node to prune
-transition_ratio_grow <- function(tree, current_node, p,
+transition_ratio_grow <- function(tree, current_node, p_vars,
                                   current_selec_var,
                                   #results_f,
                                   p_grow, i){
@@ -79,7 +79,7 @@ transition_ratio_grow <- function(tree, current_node, p,
   b <-  length(unique(tree$node_index))
 
   # Probability of splitting (n variables) ------------
-  p_adj <-  1/p
+  p_adj <-  1/p_vars
 
   # Available values to split given the variable selected for the
   # split and the node selected ----------------------
@@ -89,15 +89,15 @@ transition_ratio_grow <- function(tree, current_node, p,
 
 
   # Probability of the transition -------------------
-  p_t_to_tstar <- p_grow * (1/b) * (p_adj) * (1/n_j_adj)
+  p_tstar_to_t <- p_grow * (1/b) * (p_adj) * (1/n_j_adj)
 
 
   #  Probability of transitioning from the new tree
   # back to the original -------------------------
-  w_2 <- i
-  p_tstar_to_t <- p_prune/w_2
+  p_prune_the_node <- 1/(b+2)
+  p_t_to_tstar <- p_prune * p_prune_the_node
 
-  trans_ratio <- log(p_t_to_tstar/p_tstar_to_t)
+  trans_ratio <- log(p_tstar_to_t/p_t_to_tstar)
   return(trans_ratio)
 }
 
@@ -159,7 +159,7 @@ cond_calculation <- function(data_cond, pars){
   } else {
     inv_2 <- solve(W_1)
   }
-  term_4 <- - (n/2 + alpha)*log((0.5 * t(ymW_0)%*%inv_2%*%ymW_0 + beta))
+  term_4 <- - (n/2 + alpha)*log((0.5 * t(ymW_0)%*%inv_2%*%ymW_0) + beta)
   p_cond_y <- term_1 + term_4 + term_2 + term_3
   return(p_cond_y)
 }
@@ -205,7 +205,7 @@ lk_ratio_grow <- function(tree, current_node, pars){
 #' @param tree The current tree
 #' @param current_node The current grown node
 #' @param current_selec_var The variable selected for the split
-#' @param p The number of available predictors.
+#' @param p_vars The number of available predictors.
 #' @return The tree structure ratio
 #' @details For the tree structure ratio of the new tree, we need
 #' the probabilities of:
@@ -214,11 +214,12 @@ lk_ratio_grow <- function(tree, current_node, pars){
 # 3. Splitting at the node of the right
 # 4. Using each rule at node n
 
-structure_ratio_grow <- function(tree, current_node, current_selec_var, p){
+structure_ratio_grow <- function(tree, current_node,
+                                 current_selec_var, p_vars){
 
   # Finding the probability of selecting one
   # available predictor -------------------------------------
-  p_adj <- 1/p
+  p_adj <- 1/p_vars
 
   # Counting the distinct rule options from
   # this available predictor -------------------------------
@@ -230,7 +231,12 @@ structure_ratio_grow <- function(tree, current_node, current_selec_var, p){
   p_rule <- p_adj * (1/n_j_adj)
 
   # Calculating the probability of split
-  terminal_nodes <- tree %>% dplyr::distinct(node_index) %>% nrow()
+  #terminal_nodes <- tree %>% dplyr::distinct(node_index) %>% nrow()
+
+  # Counting terminal & internal nodes
+  internal_nodes <- length(unique(tree$parent))
+  terminal_nodes <- length(unique(tree$node))
+
 
   # !!! this is a hack, that should be fixed to no split
   if(terminal_nodes == 1){
@@ -239,8 +245,9 @@ structure_ratio_grow <- function(tree, current_node, current_selec_var, p){
     p_split <- 1/terminal_nodes
   }
 
-  p_t_star <- ((1-p_split)^2)*p_split*p_rule
-  p_t <- (1 - p_split)
+  p_left   <-  p_right <- 1/internal_nodes
+  p_t_star <-  (1-p_left)*(1-p_right)*p_split*p_rule
+  p_t      <-  (1 - p_split)
 
   st_ratio <- log(p_t_star/p_t)
 
@@ -256,26 +263,26 @@ structure_ratio_grow <- function(tree, current_node, current_selec_var, p){
 #' @param tree The current tree
 #' @param current_node The current grown node
 #' @param pars The full list of parameters
-#' @param p The number of available predictors
+#' @param p_vars The number of available predictors
 #' @param current_selec_var The variable selected for the split
 #' @param i The current iteration
 #' @param p_grow The growing probability
 #' @return The final ratio for the candidate tree
 
 ratio_grow <- function(tree, current_node,
-                       pars, p, current_selec_var,
+                       pars, p_vars, current_selec_var,
                        i, p_grow){
   # All ratios:
   trans <- transition_ratio_grow(tree, current_node,
                                  current_selec_var = current_selec_var,
-                                 p = p, i = i,
+                                 p_vars = p_vars, i = i,
                                  p_grow = p_grow)
 
   lk <- lk_ratio_grow(tree, current_node, pars)
 
   struct <- structure_ratio_grow(tree, current_node,
                                  current_selec_var = current_selec_var,
-                                 p = p)
+                                 p_vars = p_vars)
 
   r <- min(1, exp(trans + lk + struct))
   return(r)
