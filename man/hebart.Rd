@@ -16,8 +16,8 @@ hebart(
   num.trees = 5,
   sample_k1 = TRUE,
   burn_in = 50,
-  alpha_grow = 0.98,
-  beta_grow = 0.05,
+  alpha_grow = 0.9,
+  beta_grow = 0.5,
   ...
 )
 }

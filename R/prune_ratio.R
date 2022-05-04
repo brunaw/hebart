@@ -207,31 +207,30 @@ structure_ratio_prune <- function(old_tree, tree, current_node,
 #' @param tree The current tree
 #' @param current_node The current pruned node
 #' @param pars The full list of parameters
-#' @param p_split The number of available predictors
-#' @param var_in_prune The variable that was split in the node chosen to
-#' be pruned.
-#' @param nodes_to_prune The nodes to prune
-#' @param i The current iteration
-#' @param mu_res_cond The current mu results
-#' @param p_grow The grow probability
+#' @param nodes_to_prune The node to prune from
+#' @param alpha_grow The alpha of the growing probability
+#' @param beta_grow The beta of the growing probability
 #' @return The final ratio for the candidate tree
 
 
-ratio_prune <- function(old_tree, tree, current_node, pars,
-                        p_split, var_in_prune, nodes_to_prune,
-                        i, mu_res_cond, p_grow){
+ratio_prune <- function(tree, old_tree, current_node, pars,
+                        nodes_to_prune,
+                        alpha_grow, beta_grow){
   # All ratios:
-  trans <- transition_ratio_prune(old_tree, tree, current_node,
-                                  var_in_prune = var_in_prune,
-                                  p_split = p_split, i = i,
-                                  p_grow = p_grow)
+  # trans <- transition_ratio_prune(old_tree, tree, current_node,
+  #                                 var_in_prune = var_in_prune,
+  #                                 p_split = p_split, i = i,
+  #                                 p_grow = p_grow)
+  # struct <- structure_ratio_prune(old_tree, tree, current_node, var_in_prune,
+  #                                 p_split = p_split)
 
   lk <- lk_ratio_prune(old_tree, tree, current_node, pars = pars,
                        nodes_to_prune = nodes_to_prune)
-  struct <- structure_ratio_prune(old_tree, tree, current_node, var_in_prune,
-                                  p_split = p_split)
+  new_tree_prior <- tree_prior(tree, alpha_grow, beta_grow)
+  old_tree_prior <- tree_prior(old_tree, alpha_grow, beta_grow)
+  pr_ratio       <- new_tree_prior - old_tree_prior
 
-  r <- min(1, exp(trans+lk+struct))
+  r <- min(1, exp(lk + pr_ratio))
   return(r)
 }
 

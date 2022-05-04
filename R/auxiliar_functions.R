@@ -61,11 +61,8 @@ NULL
 
 
 
-#' Model data handler
-#'
-#' A function to adjust the data
-#'
 #' @name data_handler
+#' @title A function to adjust the data
 #' @rdname data_handler
 #' @param formula The model formula.
 #' @param data The modelling dataset.

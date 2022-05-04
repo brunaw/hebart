@@ -38,8 +38,8 @@ hebart <- function(formula, dataset, iter = 100,
                    # HEBART parameters
                    min_u = 0, max_u = 20, prior_k1 = TRUE,
                    num.trees = 5, sample_k1 = TRUE, burn_in = 50,
-                   alpha_grow = 0.98,
-                   beta_grow  = 0.05,
+                   alpha_grow = 0.90,
+                   beta_grow  = 0.5,
                    ...
 ){
 
@@ -139,14 +139,15 @@ than the total number of iterations")
       #----------------------------------------------------------------------
       # Sampling details ----------------------------------------------------
       action_taken = "grow"
-
-      dn     <- dplyr::n_distinct(my_tree$d)
-      p_grow <- alpha_grow*(1 + dn)^(-beta_grow)
-      u_grow <- stats::runif(1)
-      depth  <- dplyr::n_distinct(my_tree$node)
+      u_grow   <- stats::runif(1)
+      p_grow   <- 0.5             # We only have grow and prune for now
+      n_nodes  <- dplyr::n_distinct(my_tree$node)
+      # dn     <- dplyr::n_distinct(my_tree$d)
+      # p_grow <- alpha_grow*(1 + dn)^(-beta_grow)
+      #
 
       # deciding on growing or pruning
-      if(u_grow > p_grow & depth > 1){
+      if(u_grow > p_grow & n_nodes > 1){
         action_taken = 'prune'
       } else{
         action_taken = 'grow'
@@ -157,8 +158,8 @@ than the total number of iterations")
         drawn_node <- sample(unique(my_tree$node), size = 1)
         # Selecting the variable and splitting rule, uniformly
         selec_var <- depara_names$new[sample(1:p_vars, size = 1)]
-        rule  <- p_rule(variable_index = selec_var,
-                        data = my_tree, sel_node = drawn_node)
+        rule      <- p_rule(variable_index = selec_var,
+                            data = my_tree, sel_node = drawn_node)
 
 
         # all_actions <- paste0(
@@ -236,12 +237,11 @@ than the total number of iterations")
             # 3. The probability of the tree structures
 
             r <- ratio_grow(tree = sample_tree,
+                            old_tree = my_tree,
                             current_node =  parent_action,
                             pars = pars,
-                            p_vars = p_vars,
-                            current_selec_var = selec_var,
-                            i = i,
-                            p_grow = p_grow)
+                            alpha_grow = alpha_grow,
+                            beta_grow = beta_grow)
 
           } else{ r <- 0 }
         }
@@ -290,11 +290,9 @@ than the total number of iterations")
                          tree = sample_tree,
                          pars = pars,
                          current_node = parent_action,
-                         var_in_prune = selec_var,
-                         p_split = 0.5,
                          nodes_to_prune = nodes_to_prune,
-                         p_grow = p_grow,
-                         i = i)
+                         alpha_grow = alpha_grow,
+                         beta_grow = beta_grow)
 
       }
 

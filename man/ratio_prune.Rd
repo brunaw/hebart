@@ -5,39 +5,29 @@
 \title{Final ratio for a prune step}
 \usage{
 ratio_prune(
-  old_tree,
   tree,
+  old_tree,
   current_node,
   pars,
-  p_split,
-  var_in_prune,
   nodes_to_prune,
-  i,
-  mu_res_cond,
-  p_grow
+  alpha_grow,
+  beta_grow
 )
 }
 \arguments{
-\item{old_tree}{The previous tree}
-
 \item{tree}{The current tree}
+
+\item{old_tree}{The previous tree}
 
 \item{current_node}{The current pruned node}
 
 \item{pars}{The full list of parameters}
 
-\item{p_split}{The number of available predictors}
+\item{nodes_to_prune}{The node to prune from}
 
-\item{var_in_prune}{The variable that was split in the node chosen to
-be pruned.}
+\item{alpha_grow}{The alpha of the growing probability}
 
-\item{nodes_to_prune}{The nodes to prune}
-
-\item{i}{The current iteration}
-
-\item{mu_res_cond}{The current mu results}
-
-\item{p_grow}{The grow probability}
+\item{beta_grow}{The beta of the growing probability}
 }
 \value{
 The final ratio for the candidate tree

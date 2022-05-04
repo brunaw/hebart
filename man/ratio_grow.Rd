@@ -4,22 +4,20 @@
 \alias{ratio_grow}
 \title{Final ratio for a growth step.}
 \usage{
-ratio_grow(tree, current_node, pars, p_vars, current_selec_var, i, p_grow)
+ratio_grow(tree, old_tree, current_node, pars, alpha_grow, beta_grow)
 }
 \arguments{
 \item{tree}{The current tree}
+
+\item{old_tree}{The old tree}
 
 \item{current_node}{The current grown node}
 
 \item{pars}{The full list of parameters}
 
-\item{p_vars}{The number of available predictors}
+\item{alpha_grow}{The alpha of the growing probability}
 
-\item{current_selec_var}{The variable selected for the split}
-
-\item{i}{The current iteration}
-
-\item{p_grow}{The growing probability}
+\item{beta_grow}{The beta of the growing probability}
 }
 \value{
 The final ratio for the candidate tree

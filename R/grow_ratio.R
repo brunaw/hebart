@@ -206,6 +206,8 @@ lk_ratio_grow <- function(tree, current_node, pars){
 #' @param current_node The current grown node
 #' @param current_selec_var The variable selected for the split
 #' @param p_vars The number of available predictors.
+#' @param alpha_grow The alpha of the growing probability
+#' @param beta_grow The beta of the growing probability
 #' @return The tree structure ratio
 #' @details For the tree structure ratio of the new tree, we need
 #' the probabilities of:
@@ -215,7 +217,8 @@ lk_ratio_grow <- function(tree, current_node, pars){
 # 4. Using each rule at node n
 
 structure_ratio_grow <- function(tree, current_node,
-                                 current_selec_var, p_vars){
+                                 current_selec_var, p_vars,
+                                 alpha_grow, beta_grow){
 
   # Finding the probability of selecting one
   # available predictor -------------------------------------
@@ -223,8 +226,11 @@ structure_ratio_grow <- function(tree, current_node,
 
   # Counting the distinct rule options from
   # this available predictor -------------------------------
-  n_j_adj <-  tree %>%
-    dplyr::filter(parent == current_node) %>%
+  filter_tree <- tree %>%
+    dplyr::filter(parent == current_node)
+  #depth <- unique(filter_tree$d)
+
+  n_j_adj <-  filter_tree %>%
     dplyr::distinct(!!rlang::sym(current_selec_var)) %>% nrow()
 
   # Calculating the probability of the chosen rule --------
@@ -234,25 +240,86 @@ structure_ratio_grow <- function(tree, current_node,
   #terminal_nodes <- tree %>% dplyr::distinct(node_index) %>% nrow()
 
   # Counting terminal & internal nodes
-  internal_nodes <- length(unique(tree$parent))
-  terminal_nodes <- length(unique(tree$node))
+  internal_nodes <- unique(tree$parent)
+  n_int          <- length(internal_nodes)
+  log_p_inter    <- 0
 
-
-  # !!! this is a hack, that should be fixed to no split
-  if(terminal_nodes == 1){
-    p_split = 0.5
-  } else {
-    p_split <- 1/terminal_nodes
+  for(i in 1:n_int){
+    depth_1 <- tree |>
+      dplyr::filter(parent == internal_nodes[i]) |>
+      dplyr::pull(d) |>
+      unique()
+    log_p_inter <- log_p_inter + log(alpha_grow) - beta_grow * log(depth_1)
   }
 
-  p_left   <-  p_right <- 1/internal_nodes
-  p_t_star <-  (1-p_left)*(1-p_right)*p_split*p_rule
-  p_t      <-  (1 - p_split)
+  terminal_nodes <- unique(tree$node)
+  n_term         <- length(terminal_nodes)
+  log_p_term     <- 0
+
+  for(i in 1:n_term){
+    depth <- tree |>
+      dplyr::filter(node == terminal_nodes[i]) |>
+      dplyr::pull(d) |>
+      unique()
+    log_p_inter <- log_p_inter + log(alpha_grow) - beta_grow * log(1 + depth)
+  }
+
+  p_tree <- exp(log_p_term + log_p_inter)
+  #p_right <- p_left <- alpha_grow*(1 + depth + 1)^(-beta_grow)
+
+  # !!! this is a hack, that should be fixed to no split
+  # if(internal_nodes == 1){
+  #   p_split <-  0.99
+  # } else {
+  #   p_split <- 1/terminal_nodes
+  # }
+
+  p_t_star <-  p_tree*p_rule
+  p_t      <-  (1 - exp(log_p_inter))
 
   st_ratio <- log(p_t_star/p_t)
 
   return(st_ratio)
 }
+
+#' @name tree_prior
+#' @author Bruna Wundervald, \email{brunadaviesw@gmail.com}.
+#' @export
+#' @title Tree prior
+#' @description Calculates the prior for each tree structure
+#' @param tree The current tree
+#' @param alpha_grow The alpha of the growing probability
+#' @param beta_grow The beta of the growing probability
+#' @return The tree prior
+tree_prior <- function(tree, alpha_grow, beta_grow){
+
+  # Counting terminal & internal nodes
+  internal_nodes <- unique(tree$parent)
+  n_int          <- length(internal_nodes)
+  log_prior      <- 0
+
+  for(i in 1:n_int){
+    depth_1 <- tree |>
+      dplyr::filter(parent == internal_nodes[i]) |>
+      dplyr::pull(d) |>
+      unique()
+    log_prior <- log_prior + log(alpha_grow) - beta_grow * log(depth_1 + 1)
+  }
+
+  terminal_nodes <- unique(tree$node)
+  n_term         <- length(terminal_nodes)
+
+  for(i in 1:n_term){
+    depth <- tree |>
+      dplyr::filter(node == terminal_nodes[i]) |>
+      dplyr::pull(d) |>
+      unique()
+    log_prior <- log_prior + log(alpha_grow) - beta_grow * log(1 + depth + 1)
+  }
+
+  return(log_prior)
+}
+
 
 #' @name ratio_grow
 #' @author Bruna Wundervald, \email{brunadaviesw@gmail.com}.
@@ -261,29 +328,34 @@ structure_ratio_grow <- function(tree, current_node,
 #' @description The final ratio is to be used as the acceptance
 #' criteria in the MCMC of the hebart model
 #' @param tree The current tree
+#' @param old_tree The old tree
 #' @param current_node The current grown node
 #' @param pars The full list of parameters
-#' @param p_vars The number of available predictors
-#' @param current_selec_var The variable selected for the split
-#' @param i The current iteration
-#' @param p_grow The growing probability
+#' @param alpha_grow The alpha of the growing probability
+#' @param beta_grow The beta of the growing probability
 #' @return The final ratio for the candidate tree
 
-ratio_grow <- function(tree, current_node,
-                       pars, p_vars, current_selec_var,
-                       i, p_grow){
-  # All ratios:
-  trans <- transition_ratio_grow(tree, current_node,
-                                 current_selec_var = current_selec_var,
-                                 p_vars = p_vars, i = i,
-                                 p_grow = p_grow)
+ratio_grow <- function(tree, old_tree,
+                       current_node,
+                       pars,
+                       alpha_grow, beta_grow){
 
-  lk <- lk_ratio_grow(tree, current_node, pars)
+  # All ratios -- old values
+  # trans <- transition_ratio_grow(tree, current_node,
+  #                                current_selec_var = current_selec_var,
+  #                                p_vars = p_vars, i = i,
+  #                                p_grow = p_grow)
+  #
+  # struct <- structure_ratio_grow(tree, current_node,
+  #                                current_selec_var = current_selec_var,
+  #                                p_vars = p_vars,
+  #                                alpha_grow, beta_grow)
 
-  struct <- structure_ratio_grow(tree, current_node,
-                                 current_selec_var = current_selec_var,
-                                 p_vars = p_vars)
+  lk             <- lk_ratio_grow(tree, current_node, pars)
+  new_tree_prior <- tree_prior(tree, alpha_grow, beta_grow)
+  old_tree_prior <- tree_prior(old_tree, alpha_grow, beta_grow)
+  pr_ratio       <- new_tree_prior - old_tree_prior
 
-  r <- min(1, exp(trans + lk + struct))
+  r <- min(1, exp(lk + pr_ratio))
   return(r)
 }
