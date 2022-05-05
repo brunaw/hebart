@@ -142,8 +142,7 @@ lk_ratio_prune <- function(old_tree, tree, current_node, pars,
     cond_parent <- marg + cond_parent
   }
 
-  lk_ratio <-  cond_new - cond_parent
-  return(lk_ratio)
+  return(list(new = cond_new, old = cond_parent))
 }
 
 
@@ -228,9 +227,13 @@ ratio_prune <- function(tree, old_tree, current_node, pars,
                        nodes_to_prune = nodes_to_prune)
   new_tree_prior <- tree_prior(tree, alpha_grow, beta_grow)
   old_tree_prior <- tree_prior(old_tree, alpha_grow, beta_grow)
-  pr_ratio       <- new_tree_prior - old_tree_prior
 
-  r <- min(1, exp(lk + pr_ratio))
+  l_new <- lk$new + new_tree_prior
+  l_old <- lk$old + old_tree_prior
+
+  ratio <- exp(l_new - l_old)
+
+  r <- min(1, ratio)
   return(r)
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/auxiliar_functions.R
 \name{data_handler}
 \alias{data_handler}
-\title{Model data handler}
+\title{A function to adjust the data}
 \usage{
 data_handler(formula, data, group_variable, scale_fc = FALSE)
 }
