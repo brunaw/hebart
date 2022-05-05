@@ -191,9 +191,9 @@ lk_ratio_grow <- function(tree, current_node, pars){
     cond_node <- marg + cond_node
   }
 
-  lk_ratio <-  cond_node - cond_parent
+  #lk_ratio <-  cond_node - cond_parent
 
-  return(lk_ratio)
+  return(list(new = cond_node, old = cond_parent))
 }
 
 #' @name structure_ratio_grow
@@ -293,17 +293,22 @@ structure_ratio_grow <- function(tree, current_node,
 #' @return The tree prior
 tree_prior <- function(tree, alpha_grow, beta_grow){
 
+  n_nodes <- length(unique(tree$node))
+  if(n_nodes == 1){
+    return(log(1 - alpha_grow))
+  }
   # Counting terminal & internal nodes
   internal_nodes <- unique(tree$parent)
   n_int          <- length(internal_nodes)
   log_prior      <- 0
+
 
   for(i in 1:n_int){
     depth_1 <- tree |>
       dplyr::filter(parent == internal_nodes[i]) |>
       dplyr::pull(d) |>
       unique()
-    log_prior <- log_prior + log(alpha_grow) - beta_grow * log(depth_1 + 1)
+    log_prior <- log_prior + log(alpha_grow) - beta_grow * log(depth_1)
   }
 
   terminal_nodes <- unique(tree$node)
@@ -314,7 +319,7 @@ tree_prior <- function(tree, alpha_grow, beta_grow){
       dplyr::filter(node == terminal_nodes[i]) |>
       dplyr::pull(d) |>
       unique()
-    log_prior <- log_prior + log(alpha_grow) - beta_grow * log(1 + depth + 1)
+    log_prior <- log_prior + log(1 - alpha_grow * (depth+1)^(-beta_grow))
   }
 
   return(log_prior)
@@ -354,8 +359,12 @@ ratio_grow <- function(tree, old_tree,
   lk             <- lk_ratio_grow(tree, current_node, pars)
   new_tree_prior <- tree_prior(tree, alpha_grow, beta_grow)
   old_tree_prior <- tree_prior(old_tree, alpha_grow, beta_grow)
-  pr_ratio       <- new_tree_prior - old_tree_prior
 
-  r <- min(1, exp(lk + pr_ratio))
+  l_new <- lk$new + new_tree_prior
+  l_old <- lk$old + old_tree_prior
+
+  ratio <- exp(l_new - l_old)
+
+  r <- min(1, ratio)
   return(r)
 }
