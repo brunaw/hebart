@@ -147,10 +147,11 @@ cond_calculation <- function(data_cond, pars){
   ymW_0 <- y - W_0
 
   term_1 <- -(n/2)*log(2*pi)
+
   if(n_groups > 1){
     term_2 <- - 0.5 * log(faster_det(k_1_d = k_1, k_2_d = k_2, M_d = M))
   } else {
-    W_1 <- k_1 * M %*% t(M) + diag(n) + k_2
+    W_1    <- k_1 * M %*% t(M) + diag(n) + k_2
     term_2 <- - 0.5 * log(det(W_1))
   }
   term_3 <- lgamma(n/2 + alpha)
